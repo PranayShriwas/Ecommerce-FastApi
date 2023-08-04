@@ -6,12 +6,12 @@ from fastapi_login.exceptions import InvalidCredentialsException
 from fastapi_login import LoginManager
 from passlib.context import CryptContext
 from fastapi.responses import JSONResponse
-from fastapi import APIRouter, Request, status, Depends, Form,UploadeFile,File
+from fastapi import APIRouter, Request, status, Depends, Form, UploadFile, File
 from .models import *
-from . pydantic_models import User, Token, Login, Info, Update,categoryitem
+from . pydantic_models import User, Token, Login, Info, Update, categoryitem
 from slugify import slugify
 import os
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
 
 
 app = APIRouter()
@@ -29,6 +29,47 @@ def verify_password(plain_password, hashed_password):
 
 def get_password_hash(password):
     return pwd_context.hash(password)
+
+
+@app.post("/category/")
+async def create_category(data: categoryitem = Depends(), category_image: UploadFile = File(...)):
+    if await Category.exists(name=data.name):
+        return {"status": False, "message": "categosy already Exista"}
+        
+    else:
+        # slug = slugify(data.name)
+        # print(slug)
+        FILEPATH = "static/images/category/"
+
+        if not os.path.isdir(FILEPATH):
+            os.mkdir(FILEPATH)
+
+        filename = category_image.filename
+        extension = filename.split(".")[1]
+        imagename = filename.split(".")[0]
+
+        if extension not in ["png", "jpg", "jpeg"]:
+            return {"status": "error", "detials": "file Extension not allowed"}
+
+        dt = datetime.now()
+        dt_timestamp = round(datetime.timestamp(dt))
+
+        modified_image_name = imagename+"-"+str(dt_timestamp)+"."+extension
+        genrated_name = FILEPATH + modified_image_name
+        file_content = await category_image.read()
+
+        with open(genrated_name, "wb") as file:
+            file.write(file_content)
+            file.closed
+
+        category_obj = await Category.create(
+            category_image=genrated_name,
+            description=data.descripiton,
+            name=data.name,
+            # slug=slug
+        )
+
+        return category_obj
 
 
 @app.post('/')
@@ -92,24 +133,3 @@ async def login(data: Login):
     new_dict = jsonable_encoder(user)
     new_dict.update({'access_token': access_token})
     return Token(access_token=access_token, token_type='bearer')
-
-
-@app.post("/category/")
-async def create_category(data:categoryitem = Depends(),
-                         category_name:UploadeFile = File(...)):
-    if await Category.exists(name = data.name):
-        return {"status": False, "message":"categosy already exists"}
-    else:
-        slug = slugify(data.name)
-        FILEPATH = "static/image/category/"
-        if not os.path.isdir(FILEPATH):
-            os.makedirs(FILEPATH)
-        
-        filename = category_name.filename
-        extension = filename.split(".")[1]
-        imagename = filename.split(".")[0]
-        if extension not in ["png","jpg", "jpeg"]:
-            return{"status":"error","detial":"File Extension not allowed"}
-        
-        dt = datetime.now()
-        dt_timestamp = round(datetime.time)
