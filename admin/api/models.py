@@ -26,4 +26,24 @@ class Category(Model):
     updated_at = fields.DatetimeField(auto_now=True)
 
 
+class SubCategory(Model):
+    id = fields.IntField(pk=True)
+    name = fields.CharField(200, unique=True)
+    subcategory_image = fields.TextField()
+    description = fields.TextField()
+    category = fields.ForeignKeyField(
+    "models.Category", related_name="subcategory", on_delete="CASCADE")
+    is_active = fields.BooleanField(default=True)
+    updated_at = fields.DatetimeField(auto_now=True)
+    created_at = fields.DatetimeField(auto_now_add=True)
+
+class AddBrand(Model):
+    id=fields.IntField(pk=True)
+    brand_name=fields.CharField(200,unique=True)
+    is_active = fields.BooleanField(default=True)
+    updated_at = fields.DatetimeField(auto_now=True)
+    created_at = fields.DatetimeField(auto_now_add=True)
+
+
+
     
