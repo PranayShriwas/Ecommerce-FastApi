@@ -59,12 +59,25 @@ class Subcatogryitemupdate(BaseModel):
 class Addbrand(BaseModel):
     brand_name:str
 
-
-
 class brand(BaseModel):
     id:int
 
 class updatebrand(BaseModel):
     id:int
     brand_name:str
+
+class AddProduct(BaseModel):
+    catogry_id: int
+    subcatogry_id: int
+    brand_id: int
+    name:str
+    manufacturer_sku:str
+    product_code:int
+    model_no:str
+    description :str
+    mrp:int
+    base_price :int
+    gst :int
+    offer_price:int
+
 

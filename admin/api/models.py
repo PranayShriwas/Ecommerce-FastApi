@@ -44,6 +44,24 @@ class AddBrand(Model):
     updated_at = fields.DatetimeField(auto_now=True)
     created_at = fields.DatetimeField(auto_now_add=True)
 
-
-
-    
+class Product(Model):
+    id = fields.IntField(pk=True)
+    name = fields.CharField(200, unique=True)
+    manufacturer_sku = fields.CharField(30)
+    product_image = fields.TextField()
+    product_code = fields.IntField()
+    model_no = fields.CharField(200)
+    description = fields.TextField()
+    mrp = fields.IntField()
+    base_price = fields.IntField()
+    gst = fields.IntField()
+    offer_price = fields.IntField()
+    category = fields.ForeignKeyField(
+        "models.Category", related_name="category", on_delete="CASCADE")
+    subcategory = fields.ForeignKeyField(
+        "models.SubCategory", related_name="subcategory", on_delete="CASCADE")
+    addbrand = fields.ForeignKeyField(
+        "models.AddBrand", related_name="brand", on_delete="CASCADE")
+    is_active = fields.BooleanField(default=True)
+    updated_at = fields.DatetimeField(auto_now=True)
+    created_at = fields.DatetimeField(auto_now_add=True)
