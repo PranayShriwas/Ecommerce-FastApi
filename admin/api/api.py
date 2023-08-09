@@ -8,7 +8,7 @@ from passlib.context import CryptContext
 from fastapi.responses import JSONResponse
 from fastapi import APIRouter, Request, status, Depends, Form, UploadFile, File
 from .models import *
-from .pydantic_models import User,Login,Token,Info,Dlt_catogry,Update,categoryitem,update_categoryitem,Subcatogryitem,deletesubcatogry,Subcatogryitemupdate,Addbrand,brand,updatebrand,AddProduct
+from .pydantic_models import User,Login,Token,Info,Dlt_catogry,Update,categoryitem,update_categoryitem,Subcatogryitem,deletesubcatogry,Subcatogryitemupdate,Addbrand,brand,updatebrand,AddProduct,DeleteProduct,UpdateProduct
 # from slugify import slugify
 import os
 from datetime import datetime, timedelta
@@ -346,4 +346,26 @@ async def addproduct(data:AddProduct=Depends(),product_image:UploadFile=File(...
                                             model_no=data.model_no,description =data.description ,mrp=data.mrp, 
                                             base_price=data.base_price, gst=data.gst,offer_price=data.offer_price)
             return pro_obj
+
+@app.get('/All_Product_Data/')
+async def all_product_data():
+    pro_obj=await Product.all()
+    return pro_obj
+
+@app.delete('/Product_Deleted/')
+async def delete_product(data:DeleteProduct):
+    brand_obj=await Product.filter(id=data.id).delete()
+    return {'message':'Product Deleted Successfully'}
+
+@app.put('/Update_Product/')
+async def update_product(data:UpdateProduct):
+    pro_obj=await Product.get(id=data.id)
+    if not pro_obj:
+        return {"status": False, "message": "Product not register"}
+    else:
+        pro_obj=await Product.filter(id=data.id).update(name=data.name,manufacturer_sku=data.manufacturer_sku,
+                                                        product_code=data.product_code,model_no=data.model_no,
+                                                        description =data.description,mrp=data.mrp,base_price=data.base_price,
+                                                        gst=data.gst,offer_price=data.offer_price)
+        return pro_obj
 

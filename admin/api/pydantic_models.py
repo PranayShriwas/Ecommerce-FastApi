@@ -80,4 +80,22 @@ class AddProduct(BaseModel):
     gst :int
     offer_price:int
 
+class DeleteProduct(BaseModel):
+    id:int
+
+class UpdateProduct(BaseModel):
+    id:int
+    name:str
+    manufacturer_sku:str
+    product_code:int
+    model_no:str
+    description :str
+    mrp:int
+    base_price :int
+    gst :int
+    offer_price:int
+
+
+
+
 
